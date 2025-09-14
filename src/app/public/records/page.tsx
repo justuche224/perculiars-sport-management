@@ -186,7 +186,7 @@ export default async function RecordsPage() {
               </CardHeader>
               <CardContent className="p-6">
                 {Object.entries(performersByCategory).map(
-                  ([category, performers]) => (
+                  ([category, performers]: any) => (
                     <div key={category} className="mb-8 last:mb-0">
                       <h3 className="text-xl font-bold text-gray-100 mb-4 capitalize">
                         {category} Events

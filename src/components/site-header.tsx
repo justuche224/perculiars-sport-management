@@ -11,7 +11,7 @@ export function SiteHeader() {
     { href: "/", label: "Home", icon: Briefcase },
     { href: "/public/schedule", label: "Schedules", icon: Tag },
     { href: "/public/houses", label: "Houses", icon: HelpCircle },
-    { href: "/public/participants", label: "Participant", icon: FileText },
+    { href: "/public/participants", label: "Participants", icon: FileText },
     { href: "/public/records", label: "Records", icon: Info },
     { href: "/public/results", label: "Results", icon: Info },
   ];
