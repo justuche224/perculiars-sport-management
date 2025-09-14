@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Chapter 3: System Implementation - Sports Day Management System
+    </title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #fafafa;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin: 20px auto;
+      }
+
+      h1 {
+        color: #1a365d;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-align: center;
+        border-bottom: 3px solid #e2e8f0;
+        padding-bottom: 1rem;
+      }
+
+      h2 {
+        color: #2d3748;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 2rem 0 1rem 0;
+        padding-left: 1rem;
+        border-left: 4px solid #4299e1;
+      }
+
+      h3 {
+        color: #4a5568;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin: 1.5rem 0 0.8rem 0;
+      }
+
+      h4 {
+        color: #718096;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 1.2rem 0 0.6rem 0;
+      }
+
+      p {
+        margin-bottom: 1rem;
+        text-align: justify;
+      }
+
+      ul,
+      ol {
+        margin: 1rem 0;
+        padding-left: 2rem;
+      }
+
+      li {
+        margin-bottom: 0.5rem;
+      }
+
+      .code-block {
+        background-color: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 0.9rem;
+        overflow-x: auto;
+      }
+
+      .highlight {
+        background-color: #fef5e7;
+        border-left: 4px solid #f6ad55;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .image-container {
+        text-align: center;
+        margin: 2rem 0;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .image-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .image-caption {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+        font-style: italic;
+      }
+
+      .table-container {
+        overflow-x: auto;
+        margin: 1.5rem 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      th,
+      td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #2d3748;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+
+      tr:hover {
+        background-color: #edf2f7;
+      }
+
+      .tech-stack {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .tech-item {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border-left: 4px solid #4299e1;
+      }
+
+      .tech-item h4 {
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+      }
+
+      .tech-item ul {
+        margin: 0;
+        padding-left: 1rem;
+      }
+
+      .phase-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+
+      .phase-item {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border-top: 4px solid #48bb78;
+      }
+
+      .phase-item h4 {
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid #e2e8f0;
+        color: #666;
+        font-style: italic;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        h2 {
+          font-size: 1.5rem;
+        }
+
+        .tech-stack,
+        .phase-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .toc {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border-left: 4px solid #9f7aea;
+      }
+
+      .toc h3 {
+        margin-bottom: 1rem;
+        color: #2d3748;
+      }
+
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .toc li {
+        margin-bottom: 0.3rem;
+      }
+
+      .toc a {
+        color: #4299e1;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .toc a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Chapter 3: System Implementation</h1>
+
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <ul>
+          <li><a href="#introduction">3.1 Introduction</a></li>
+          <li><a href="#tools-tech">3.2 Tools and Technologies Used</a></li>
+          <li><a href="#database-design">3.3 Database Design</a></li>
+          <li>
+            <a href="#development-methodology">3.4 Development Methodology</a>
+          </li>
+          <li><a href="#system-architecture">3.5 System Architecture</a></li>
+          <li><a href="#system-workflows">3.6 System Workflows</a></li>
+          <li>
+            <a href="#security-implementation">3.7 Security Implementation</a>
+          </li>
+          <li>
+            <a href="#performance-optimization">3.8 Performance Optimization</a>
+          </li>
+          <li><a href="#testing-strategy">3.9 Testing Strategy</a></li>
+          <li><a href="#deployment-devops">3.10 Deployment and DevOps</a></li>
+          <li>
+            <a href="#monitoring-maintenance"
+              >3.11 Monitoring and Maintenance</a
+            >
+          </li>
+          <li><a href="#conclusion">3.12 Conclusion</a></li>
+        </ul>
+      </div>
+
+      <h2 id="introduction">3.1 Introduction</h2>
+      <p>
+        This chapter presents the detailed implementation of the Sports Day
+        Management System, covering the tools and technologies used, database
+        design, development methodology, and system architecture. The system was
+        developed as a comprehensive web application to streamline the
+        management of school sports events, participant registration, and
+        real-time results tracking.
+      </p>
+
+      <h2 id="tools-tech">3.2 Tools and Technologies Used</h2>
+
+      <h3>3.2.1 Frontend Technologies</h3>
+
+      <div class="tech-stack">
+        <div class="tech-item">
+          <h4>Next.js 15 (App Router)</h4>
+          <ul>
+            <li>
+              Modern React framework with server-side rendering capabilities
+            </li>
+            <li>App Router for improved routing and layout management</li>
+            <li>Built-in optimization for performance and SEO</li>
+            <li>TypeScript support for type safety</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>React 18</h4>
+          <ul>
+            <li>Component-based user interface development</li>
+            <li>Hooks for state management and side effects</li>
+            <li>Server and client components for optimal performance</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>Tailwind CSS v4</h4>
+          <ul>
+            <li>Utility-first CSS framework for rapid UI development</li>
+            <li>Custom design system with consistent spacing and colors</li>
+            <li>Responsive design capabilities</li>
+            <li>Dark mode support</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>shadcn/ui Component Library</h4>
+          <ul>
+            <li>Pre-built, accessible UI components</li>
+            <li>Consistent design language across the application</li>
+            <li>Customizable component variants</li>
+            <li>Built on Radix UI primitives</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>Lucide React Icons</h4>
+          <ul>
+            <li>Comprehensive icon library</li>
+            <li>Consistent visual language</li>
+            <li>Scalable vector icons</li>
+            <li>Tree-shakable for optimal bundle size</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>3.2.2 Backend Technologies</h3>
+
+      <div class="tech-stack">
+        <div class="tech-item">
+          <h4>Supabase</h4>
+          <ul>
+            <li>Backend-as-a-Service (BaaS) platform</li>
+            <li>PostgreSQL database with real-time capabilities</li>
+            <li>Built-in authentication and authorization</li>
+            <li>Row Level Security (RLS) for data protection</li>
+            <li>RESTful API with automatic generation</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>PostgreSQL</h4>
+          <ul>
+            <li>Relational database management system</li>
+            <li>ACID compliance for data integrity</li>
+            <li>Advanced querying capabilities</li>
+            <li>JSON support for flexible data structures</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>3.2.3 Development Tools</h3>
+
+      <div class="tech-stack">
+        <div class="tech-item">
+          <h4>TypeScript</h4>
+          <ul>
+            <li>Static type checking for JavaScript</li>
+            <li>Enhanced IDE support and autocomplete</li>
+            <li>Reduced runtime errors</li>
+            <li>Better code documentation</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>ESLint &amp; Prettier</h4>
+          <ul>
+            <li>Code quality and formatting tools</li>
+            <li>Consistent code style across the project</li>
+            <li>Automated error detection</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>Git Version Control</h4>
+          <ul>
+            <li>Source code management</li>
+            <li>Collaborative development support</li>
+            <li>Change tracking and history</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>Vercel Platform</h4>
+          <ul>
+            <li>Deployment and hosting platform</li>
+            <li>Automatic deployments from Git</li>
+            <li>Edge network for global performance</li>
+            <li>Environment variable management</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>3.2.4 Authentication &amp; Security</h3>
+
+      <div class="tech-stack">
+        <div class="tech-item">
+          <h4>Supabase Auth</h4>
+          <ul>
+            <li>Email/password authentication</li>
+            <li>Session management</li>
+            <li>Role-based access control</li>
+            <li>Secure token handling</li>
+          </ul>
+        </div>
+
+        <div class="tech-item">
+          <h4>Middleware Protection</h4>
+          <ul>
+            <li>Route-level authentication</li>
+            <li>Automatic redirects for unauthorized access</li>
+            <li>Session validation</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 id="database-design">3.3 Database Design</h2>
+
+      <h3>3.3.1 Database Schema Overview</h3>
+      <p>
+        The system uses a relational database design with seven main entities,
+        each serving specific functions within the sports management ecosystem.
+      </p>
+
+      <h3>3.3.2 Entity Relationship Diagram</h3>
+      <div class="image-container">
+        <img
+          src="./EntityRelationshipDiagram.jpg"
+          alt="Entity Relationship Diagram"
+        />
+        <div class="image-caption">
+          Figure 3.1: Entity Relationship Diagram showing database relationships
+        </div>
+      </div>
+
+      <h3>3.3.3 Table Specifications</h3>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Table</th>
+              <th>Description</th>
+              <th>Key Fields</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>PROFILES</strong></td>
+              <td>Stores user account information and roles</td>
+              <td>
+                Links users to houses for house captains, supports role-based
+                access control
+              </td>
+            </tr>
+            <tr>
+              <td><strong>HOUSES</strong></td>
+              <td>Represents competing teams in the sports day</td>
+              <td>
+                Tracks total points accumulated, maintains house colors and
+                captain assignments
+              </td>
+            </tr>
+            <tr>
+              <td><strong>PARTICIPANTS</strong></td>
+              <td>Individual competitors in the sports day</td>
+              <td>
+                Links to houses for team affiliation, stores age for
+                category-based competitions
+              </td>
+            </tr>
+            <tr>
+              <td><strong>SPORTS</strong></td>
+              <td>Defines available sports and their point systems</td>
+              <td>
+                Configurable points for different positions, limits participants
+                per house per sport
+              </td>
+            </tr>
+            <tr>
+              <td><strong>EVENTS</strong></td>
+              <td>Scheduled competitions for specific sports</td>
+              <td>
+                Tracks event status, links to sports for rules and point systems
+              </td>
+            </tr>
+            <tr>
+              <td><strong>EVENT_PARTICIPANTS</strong></td>
+              <td>Junction table for event participation</td>
+              <td>Records participant positions and points earned</td>
+            </tr>
+            <tr>
+              <td><strong>RESULTS</strong></td>
+              <td>Final recorded results for completed events</td>
+              <td>Tracks points awarded to houses, maintains audit trail</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>3.3.4 Database Constraints and Relationships</h3>
+
+      <h4>Primary Keys</h4>
+      <ul>
+        <li>All tables use UUID primary keys for global uniqueness</li>
+        <li>UUIDs provide security through unpredictability</li>
+      </ul>
+
+      <h4>Foreign Key Relationships</h4>
+      <ul>
+        <li>
+          Participants belong to houses (participants.house_id → houses.id)
+        </li>
+        <li>Events are based on sports (events.sport_id → sports.id)</li>
+        <li>Results link events, participants, and houses</li>
+        <li>Profiles can be linked to houses for captains</li>
+      </ul>
+
+      <h4>Data Integrity Constraints</h4>
+      <ul>
+        <li>NOT NULL constraints on essential fields</li>
+        <li>CHECK constraints for valid status values</li>
+        <li>UNIQUE constraints where appropriate</li>
+      </ul>
+
+      <h2 id="development-methodology">3.4 Development Methodology</h2>
+
+      <h3>3.4.1 Agile Development Approach</h3>
+      <p>
+        The project followed an Agile development methodology with iterative
+        development cycles and continuous improvement.
+      </p>
+
+      <h4>Sprint Planning</h4>
+      <ul>
+        <li>1-week sprint cycles</li>
+        <li>Feature-based sprint goals</li>
+        <li>User story prioritization</li>
+        <li>Backlog refinement sessions</li>
+      </ul>
+
+      <h4>Development Practices</h4>
+      <ul>
+        <li>Test-driven development for critical functions</li>
+        <li>Code reviews for quality assurance</li>
+        <li>Continuous integration and deployment</li>
+        <li>Regular refactoring for code quality</li>
+      </ul>
+
+      <h4>Stakeholder Engagement</h4>
+      <ul>
+        <li>Regular demo sessions</li>
+        <li>Feedback incorporation</li>
+        <li>User acceptance testing</li>
+        <li>Iterative requirement refinement</li>
+      </ul>
+
+      <h3>3.4.2 Development Phases</h3>
+
+      <div class="phase-grid">
+        <div class="phase-item">
+          <h4>Phase 1: Foundation Setup</h4>
+          <ul>
+            <li>Project initialization and configuration</li>
+            <li>Database schema design and implementation</li>
+            <li>Authentication system setup</li>
+            <li>Basic UI component library integration</li>
+          </ul>
+        </div>
+
+        <div class="phase-item">
+          <h4>Phase 2: Core Functionality</h4>
+          <ul>
+            <li>User management and role-based access</li>
+            <li>House and participant management</li>
+            <li>Sports and event creation</li>
+            <li>Basic CRUD operations</li>
+          </ul>
+        </div>
+
+        <div class="phase-item">
+          <h4>Phase 3: Advanced Features</h4>
+          <ul>
+            <li>Results recording and point calculation</li>
+            <li>Real-time leaderboards and statistics</li>
+            <li>Search and filtering capabilities</li>
+            <li>Public viewing interfaces</li>
+          </ul>
+        </div>
+
+        <div class="phase-item">
+          <h4>Phase 4: Polish and Optimization</h4>
+          <ul>
+            <li>UI/UX improvements</li>
+            <li>Performance optimization</li>
+            <li>Security hardening</li>
+            <li>Documentation completion</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2 id="system-architecture">3.5 System Architecture</h2>
+
+      <h3>3.5.1 Architecture Overview</h3>
+      <p>
+        The system follows a modern three-tier architecture with clear
+        separation of concerns:
+      </p>
+
+      <h4>Presentation Layer (Frontend)</h4>
+      <ul>
+        <li>Next.js React application</li>
+        <li>Server-side rendering for performance</li>
+        <li>Responsive design for multiple devices</li>
+        <li>Component-based architecture</li>
+      </ul>
+
+      <h4>Application Layer (Backend Logic)</h4>
+      <ul>
+        <li>Next.js API routes and Server Actions</li>
+        <li>Business logic implementation</li>
+        <li>Authentication and authorization</li>
+        <li>Data validation and processing</li>
+      </ul>
+
+      <h4>Data Layer (Database)</h4>
+      <ul>
+        <li>Supabase PostgreSQL database</li>
+        <li>Row Level Security for data protection</li>
+        <li>Real-time subscriptions</li>
+        <li>Automated backups and scaling</li>
+      </ul>
+
+      <h3>3.5.2 Component Architecture Diagram</h3>
+      <div class="image-container">
+        <img
+          src="./ComponentArchitectureDiagram.jpg"
+          alt="Component Architecture Diagram"
+        />
+        <div class="image-caption">
+          Figure 3.2: Component Architecture Diagram showing system components
+        </div>
+      </div>
+
+      <h2 id="system-workflows">3.6 System Workflows</h2>
+
+      <h3>3.6.1 User Authentication Flow</h3>
+      <div class="image-container">
+        <img
+          src="./UserAuthenticationFlow.jpg"
+          alt="User Authentication Flow"
+        />
+        <div class="image-caption">
+          Figure 3.3: User Authentication Flow diagram
+        </div>
+      </div>
+
+      <h3>3.6.2 Event Management Activity Diagram</h3>
+      <div class="image-container">
+        <img
+          src="./EventManagementActivityDiagram.jpg"
+          alt="Event Management Activity Diagram"
+        />
+        <div class="image-caption">
+          Figure 3.4: Event Management Activity Diagram
+        </div>
+      </div>
+
+      <h3>3.6.3 Results Recording Sequence Diagram</h3>
+      <div class="image-container">
+        <img
+          src="./ResultsRecordingSequenceDiagram.jpg"
+          alt="Results Recording Sequence Diagram"
+        />
+        <div class="image-caption">
+          Figure 3.5: Results Recording Sequence Diagram
+        </div>
+      </div>
+
+      <h3>3.6.4 Class Diagram</h3>
+      <div class="image-container">
+        <img src="./ClassDiagram.jpg" alt="Class Diagram" />
+        <div class="image-caption">
+          Figure 3.6: Class Diagram showing system classes and relationships
+        </div>
+      </div>
+
+      <h2 id="security-implementation">3.7 Security Implementation</h2>
+
+      <h3>3.7.1 Authentication Security</h3>
+
+      <h4>Session Management</h4>
+      <ul>
+        <li>JWT tokens with automatic refresh</li>
+        <li>Secure HTTP-only cookies</li>
+        <li>Session timeout handling</li>
+        <li>Multi-device session support</li>
+      </ul>
+
+      <h4>Password Security</h4>
+      <ul>
+        <li>Bcrypt hashing with salt</li>
+        <li>Minimum password requirements</li>
+        <li>Account lockout after failed attempts</li>
+        <li>Password reset functionality</li>
+      </ul>
+
+      <h3>3.7.2 Authorization Framework</h3>
+
+      <h4>Role-Based Access Control (RBAC)</h4>
+      <ul>
+        <li><strong>Admin:</strong> Full system access</li>
+        <li><strong>House Captain:</strong> Limited house management</li>
+        <li><strong>Parent:</strong> Read-only public access</li>
+      </ul>
+
+      <h4>Route Protection</h4>
+      <ul>
+        <li>Middleware-based authentication</li>
+        <li>Role-based route restrictions</li>
+        <li>Automatic redirects for unauthorized access</li>
+      </ul>
+
+      <h3>3.7.3 Data Security</h3>
+
+      <h4>Row Level Security (RLS)</h4>
+      <ul>
+        <li>Database-level access control</li>
+        <li>User-specific data filtering</li>
+        <li>Automatic policy enforcement</li>
+      </ul>
+
+      <h4>Input Validation</h4>
+      <ul>
+        <li>Server-side validation for all inputs</li>
+        <li>SQL injection prevention</li>
+        <li>XSS protection through sanitization</li>
+      </ul>
+
+      <h2 id="performance-optimization">3.8 Performance Optimization</h2>
+
+      <h3>3.8.1 Frontend Optimization</h3>
+
+      <h4>Code Splitting</h4>
+      <ul>
+        <li>Route-based code splitting</li>
+        <li>Component lazy loading</li>
+        <li>Dynamic imports for large components</li>
+      </ul>
+
+      <h4>Caching Strategy</h4>
+      <ul>
+        <li>Browser caching for static assets</li>
+        <li>API response caching</li>
+        <li>Image optimization and lazy loading</li>
+      </ul>
+
+      <h3>3.8.2 Database Optimization</h3>
+
+      <h4>Query Optimization</h4>
+      <ul>
+        <li>Indexed columns for frequent queries</li>
+        <li>Efficient JOIN operations</li>
+        <li>Pagination for large datasets</li>
+      </ul>
+
+      <h4>Real-time Performance</h4>
+      <ul>
+        <li>Selective real-time subscriptions</li>
+        <li>Optimized payload sizes</li>
+        <li>Connection pooling</li>
+      </ul>
+
+      <h2 id="testing-strategy">3.9 Testing Strategy</h2>
+
+      <h3>3.9.1 Testing Levels</h3>
+
+      <h4>Unit Testing</h4>
+      <ul>
+        <li>Component testing with React Testing Library</li>
+        <li>Function testing for business logic</li>
+        <li>Database query testing</li>
+      </ul>
+
+      <h4>Integration Testing</h4>
+      <ul>
+        <li>API endpoint testing</li>
+        <li>Database integration testing</li>
+        <li>Authentication flow testing</li>
+      </ul>
+
+      <h4>End-to-End Testing</h4>
+      <ul>
+        <li>User workflow testing</li>
+        <li>Cross-browser compatibility</li>
+        <li>Mobile responsiveness testing</li>
+      </ul>
+
+      <h3>3.9.2 Quality Assurance</h3>
+
+      <h4>Code Quality</h4>
+      <ul>
+        <li>TypeScript for type safety</li>
+        <li>ESLint for code standards</li>
+        <li>Prettier for consistent formatting</li>
+      </ul>
+
+      <h4>Performance Testing</h4>
+      <ul>
+        <li>Load testing for concurrent users</li>
+        <li>Database performance monitoring</li>
+        <li>Frontend performance metrics</li>
+      </ul>
+
+      <h2 id="deployment-devops">3.10 Deployment and DevOps</h2>
+
+      <h3>3.10.1 Deployment Pipeline</h3>
+
+      <h4>Continuous Integration</h4>
+      <ul>
+        <li>Automated testing on code commits</li>
+        <li>Build verification and optimization</li>
+        <li>Security vulnerability scanning</li>
+      </ul>
+
+      <h4>Continuous Deployment</h4>
+      <ul>
+        <li>Automatic deployment to staging</li>
+        <li>Manual promotion to production</li>
+        <li>Rollback capabilities</li>
+      </ul>
+
+      <h3>3.10.2 Infrastructure</h3>
+
+      <h4>Hosting Platform</h4>
+      <ul>
+        <li>Vercel for frontend hosting</li>
+        <li>Global CDN for performance</li>
+        <li>Automatic scaling based on traffic</li>
+      </ul>
+
+      <h4>Database Hosting</h4>
+      <ul>
+        <li>Supabase managed PostgreSQL</li>
+        <li>Automatic backups and recovery</li>
+        <li>High availability configuration</li>
+      </ul>
+
+      <h2 id="monitoring-maintenance">3.11 Monitoring and Maintenance</h2>
+
+      <h3>3.11.1 Application Monitoring</h3>
+
+      <h4>Performance Monitoring</h4>
+      <ul>
+        <li>Real-time performance metrics</li>
+        <li>Error tracking and alerting</li>
+        <li>User experience monitoring</li>
+      </ul>
+
+      <h4>Security Monitoring</h4>
+      <ul>
+        <li>Authentication attempt logging</li>
+        <li>Suspicious activity detection</li>
+        <li>Regular security audits</li>
+      </ul>
+
+      <h3>3.11.2 Maintenance Procedures</h3>
+
+      <h4>Regular Updates</h4>
+      <ul>
+        <li>Dependency updates and security patches</li>
+        <li>Database maintenance and optimization</li>
+        <li>Performance tuning and optimization</li>
+      </ul>
+
+      <h4>Backup and Recovery</h4>
+      <ul>
+        <li>Automated daily database backups</li>
+        <li>Point-in-time recovery capabilities</li>
+        <li>Disaster recovery procedures</li>
+      </ul>
+
+      <h2 id="conclusion">3.12 Conclusion</h2>
+      <p>
+        The Sports Day Management System has been successfully implemented using
+        modern web technologies and best practices. The system provides a
+        comprehensive solution for managing school sports events with robust
+        security, real-time capabilities, and an intuitive user interface. The
+        Agile development methodology ensured iterative improvement and
+        stakeholder satisfaction throughout the development process.
+      </p>
+
+      <p>
+        The architecture supports scalability and maintainability, while the
+        security implementation ensures data protection and user privacy. The
+        system is ready for production deployment and can handle the demands of
+        a full-scale sports day event with multiple concurrent users and
+        real-time data updates.
+      </p>
+
+      <div class="footer">
+        <p>
+          <em
+            >This document represents the technical implementation details of
+            the Sports Day Management System as of the completion of development
+            Phase 4.</em
+          >
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
