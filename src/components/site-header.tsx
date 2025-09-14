@@ -13,6 +13,7 @@ export function SiteHeader() {
     { href: "/public/houses", label: "Houses", icon: HelpCircle },
     { href: "/public/participants", label: "Participant", icon: FileText },
     { href: "/public/records", label: "Records", icon: Info },
+    { href: "/public/results", label: "Results", icon: Info },
   ];
 
   return (

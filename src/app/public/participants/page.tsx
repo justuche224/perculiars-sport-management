@@ -34,25 +34,25 @@ export default async function PublicParticipantsPage() {
   const totalParticipants = participants?.length || 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="outline" asChild>
+          <Button asChild>
             <Link href="/public/results">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Results
             </Link>
           </Button>
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Participants</h1>
+            <h1 className="text-4xl font-bold text-gray-100">Participants</h1>
             <p className="text-gray-600 mt-2">{totalParticipants} athletes competing across all house teams</p>
           </div>
         </div>
 
         {participantsByHouse && Object.keys(participantsByHouse).length > 0 ? (
           Object.entries(participantsByHouse).map(([houseName, houseParticipants]) => (
-            <Card key={houseName} className="shadow-lg bg-white">
+            <Card key={houseName} className="shadow-lg liquid-glass-enhanced">
               <CardHeader>
                 <div className="flex items-center gap-3">
                   {houseParticipants[0]?.house && (
@@ -61,7 +61,7 @@ export default async function PublicParticipantsPage() {
                       style={{ backgroundColor: houseParticipants[0].house.color }}
                     />
                   )}
-                  <CardTitle className="text-2xl text-gray-900">{houseName}</CardTitle>
+                  <CardTitle className="text-2xl text-gray-200">{houseName}</CardTitle>
                   <Badge variant="secondary" className="text-lg px-3 py-1">
                     {houseParticipants.length} participants
                   </Badge>
@@ -72,16 +72,16 @@ export default async function PublicParticipantsPage() {
                   {houseParticipants.map((participant) => (
                     <div
                       key={participant.id}
-                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      className="flex items-center gap-3 p-3 bg-card rounded-lg"
                     >
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <User className="h-5 w-5 text-gray-600" />
+                        <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center">
+                          <User className="h-5 w-5 " />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-gray-900 truncate">{participant.full_name}</div>
-                        <div className="text-sm text-gray-600">Age: {participant.age}</div>
+                        <div className="font-medium truncate">{participant.full_name}</div>
+                        <div className="text-sm ">Age: {participant.age}</div>
                       </div>
                     </div>
                   ))}
@@ -100,7 +100,7 @@ export default async function PublicParticipantsPage() {
         )}
 
         {/* Statistics */}
-        <Card className="bg-white shadow-lg">
+        <Card className="liquid-glass-enhanced shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-blue-500" />
@@ -111,7 +111,7 @@ export default async function PublicParticipantsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <div className="text-2xl font-bold text-blue-600">{totalParticipants}</div>
-                <div className="text-sm text-gray-600">Total Athletes</div>
+                <div className="text-sm text-gray-800">Total Athletes</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <div className="text-2xl font-bold text-green-600">

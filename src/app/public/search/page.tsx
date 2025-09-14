@@ -1,58 +1,66 @@
-"use client"
+"use client";
 
-import { createClient } from "@/lib/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, User, Trophy, Calendar, ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { useState, useEffect } from "react"
-import { format } from "date-fns"
+import { createClient } from "@/lib/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Search, User, Trophy, Calendar, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
 
 interface SearchResult {
-  type: "participant" | "event" | "result"
-  id: string
-  title: string
-  subtitle: string
-  details: string
-  house?: { name: string; color: string }
-  position?: number
-  points?: number
-  date?: string
+  type: "participant" | "event" | "result";
+  id: string;
+  title: string;
+  subtitle: string;
+  details: string;
+  house?: { name: string; color: string };
+  position?: number;
+  points?: number;
+  date?: string;
 }
 
 export default function SearchPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [searchType, setSearchType] = useState("all")
-  const [results, setResults] = useState<SearchResult[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchType, setSearchType] = useState("all");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const performSearch = async () => {
     if (!searchTerm.trim()) {
-      setResults([])
-      return
+      setResults([]);
+      return;
     }
 
-    setIsLoading(true)
-    const supabase = createClient()
-    const searchResults: SearchResult[] = []
+    setIsLoading(true);
+    const supabase = createClient();
+    const searchResults: SearchResult[] = [];
 
     try {
       // Search participants
       if (searchType === "all" || searchType === "participants") {
         const { data: participants } = await supabase
           .from("participants")
-          .select(`
+          .select(
+            `
             id,
             full_name,
             age,
             house:houses(name, color)
-          `)
+          `
+          )
           .ilike("full_name", `%${searchTerm}%`)
           .eq("is_active", true)
-          .limit(10)
+          .limit(10);
 
         participants?.forEach((participant) => {
           searchResults.push({
@@ -60,43 +68,46 @@ export default function SearchPage() {
             id: participant.id,
             title: participant.full_name,
             subtitle: `Age: ${participant.age}`,
-            details: `House: ${participant.house?.name || "Unassigned"}`,
-            house: participant.house,
-          })
-        })
+            details: `House: ${participant.house?.[0]?.name || "Unassigned"}`,
+            house: participant.house?.[0],
+          });
+        });
       }
 
       // Search events
       if (searchType === "all" || searchType === "events") {
         const { data: events } = await supabase
           .from("events")
-          .select(`
+          .select(
+            `
             id,
             name,
             scheduled_time,
             status,
             sport:sports(name, category)
-          `)
+          `
+          )
           .or(`name.ilike.%${searchTerm}%,sport.name.ilike.%${searchTerm}%`)
-          .limit(10)
+          .limit(10);
 
         events?.forEach((event) => {
           searchResults.push({
             type: "event",
             id: event.id,
             title: event.name,
-            subtitle: `${event.sport?.name} - ${event.sport?.category}`,
+            subtitle: `${event.sport?.[0]?.name} - ${event.sport?.[0]?.category}`,
             details: `Status: ${event.status.replace("_", " ")}`,
             date: event.scheduled_time,
-          })
-        })
+          });
+        });
       }
 
       // Search results
       if (searchType === "all" || searchType === "results") {
         const { data: resultData } = await supabase
           .from("results")
-          .select(`
+          .select(
+            `
             id,
             position,
             points_awarded,
@@ -104,76 +115,83 @@ export default function SearchPage() {
             participant:participants(full_name),
             event:events(name, sport:sports(name)),
             house:houses(name, color)
-          `)
-          .or(`participant.full_name.ilike.%${searchTerm}%,event.name.ilike.%${searchTerm}%`)
-          .limit(10)
+          `
+          )
+          .or(
+            `participant.full_name.ilike.%${searchTerm}%,event.name.ilike.%${searchTerm}%`
+          )
+          .limit(10);
 
         resultData?.forEach((result) => {
           searchResults.push({
             type: "result",
             id: result.id,
-            title: `${result.participant?.full_name} - ${result.event?.name}`,
-            subtitle: `${result.event?.sport?.name}`,
-            details: `${result.house?.name}`,
-            house: result.house,
+            title: `${result.participant?.[0]?.full_name} - ${result.event?.[0]?.name}`,
+            subtitle: `${result.event?.[0]?.sport?.[0]?.name}`,
+            details: `${result.house?.[0]?.name}`,
+            house: result.house?.[0],
             position: result.position,
             points: result.points_awarded,
             date: result.created_at,
-          })
-        })
+          });
+        });
       }
 
-      setResults(searchResults)
+      setResults(searchResults);
     } catch (error) {
-      console.error("Search error:", error)
+      console.error("Search error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      performSearch()
-    }, 300)
+      performSearch();
+    }, 300);
 
-    return () => clearTimeout(timeoutId)
-  }, [searchTerm, searchType])
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, searchType]);
 
   const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return ""
-    return format(new Date(dateString), "MMM dd, yyyy")
-  }
+    if (!dateString) return "";
+    return format(new Date(dateString), "MMM dd, yyyy");
+  };
 
   const getPositionBadge = (position: number) => {
     const colors = {
       1: "bg-yellow-500 text-white",
       2: "bg-gray-400 text-white",
       3: "bg-amber-600 text-white",
-    }
-    return colors[position as keyof typeof colors] || "bg-gray-300 text-gray-700"
-  }
+    };
+    return (
+      colors[position as keyof typeof colors] || "bg-gray-300 text-gray-700"
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="outline" asChild>
+          <Button variant="link" className="text-gray-100" asChild>
             <Link href="/public/results">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Results
             </Link>
           </Button>
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Search</h1>
-            <p className="text-gray-600 mt-2">Find participants, events, and results</p>
+            <h1 className="text-4xl font-bold text-gray-100">Search</h1>
+            <p className="text-gray-400 mt-2">
+              Find participants, events, and results
+            </p>
           </div>
         </div>
 
         {/* Search Interface */}
-        <Card className="shadow-lg bg-white">
+        <Card className="shadow-lg liquid-glass-enhanced">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-white">
               <Search className="h-5 w-5" />
               Search Sports Day Information
             </CardTitle>
@@ -189,7 +207,7 @@ export default function SearchPage() {
                 />
               </div>
               <Select value={searchType} onValueChange={setSearchType}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-48 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -205,34 +223,59 @@ export default function SearchPage() {
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                <p className="text-gray-600 mt-2">Searching...</p>
+                <p className="text-gray-400 mt-2">Searching...</p>
               </div>
             ) : results.length > 0 ? (
               <div className="space-y-3">
-                {results.map((result) => (
+                {results.map((result: any) => (
                   <div
                     key={`${result.type}-${result.id}`}
-                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors liquid-glass-enhanced"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 mt-1">
-                          {result.type === "participant" && <User className="h-5 w-5 text-blue-500" />}
-                          {result.type === "event" && <Calendar className="h-5 w-5 text-green-500" />}
-                          {result.type === "result" && <Trophy className="h-5 w-5 text-yellow-500" />}
+                          {result.type === "participant" && (
+                            <User className="h-5 w-5 text-blue-500" />
+                          )}
+                          {result.type === "event" && (
+                            <Calendar className="h-5 w-5 text-green-500" />
+                          )}
+                          {result.type === "result" && (
+                            <Trophy className="h-5 w-5 text-yellow-500" />
+                          )}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{result.title}</h3>
-                          <p className="text-sm text-gray-600">{result.subtitle}</p>
+                          <h3 className="font-semibold text-gray-100">
+                            {result.title}
+                          </h3>
+                          <p className="text-sm text-gray-400">
+                            {result.subtitle}
+                          </p>
                           <div className="flex items-center gap-2 mt-1">
                             {result.house && (
                               <div className="flex items-center gap-1">
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: result.house.color }} />
-                                <span className="text-sm text-gray-600">{result.details}</span>
+                                <div
+                                  className="w-3 h-3 rounded-full"
+                                  style={{
+                                    backgroundColor: result.house?.[0]?.color,
+                                  }}
+                                />
+                                <span className="text-sm text-gray-400">
+                                  {result.details}
+                                </span>
                               </div>
                             )}
-                            {!result.house && <span className="text-sm text-gray-600">{result.details}</span>}
-                            {result.date && <span className="text-xs text-gray-500">• {formatDate(result.date)}</span>}
+                            {!result.house && (
+                              <span className="text-sm text-gray-400">
+                                {result.details}
+                              </span>
+                            )}
+                            {result.date && (
+                              <span className="text-xs text-gray-400">
+                                • {formatDate(result.date)}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -245,13 +288,17 @@ export default function SearchPage() {
                             {result.position === 1
                               ? "1st"
                               : result.position === 2
-                                ? "2nd"
-                                : result.position === 3
-                                  ? "3rd"
-                                  : `${result.position}th`}
+                              ? "2nd"
+                              : result.position === 3
+                              ? "3rd"
+                              : `${result.position}th`}
                           </Badge>
                         )}
-                        {result.points && result.points > 0 && <Badge variant="secondary">+{result.points} pts</Badge>}
+                        {result.points && result.points > 0 && (
+                          <Badge variant="secondary">
+                            +{result.points} pts
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -260,39 +307,65 @@ export default function SearchPage() {
             ) : searchTerm ? (
               <div className="text-center py-8">
                 <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No results found</h3>
-                <p className="text-gray-600">Try searching with different keywords or check the spelling</p>
+                <h3 className="text-lg font-medium text-gray-100 mb-2">
+                  No results found
+                </h3>
+                <p className="text-gray-400">
+                  Try searching with different keywords or check the spelling
+                </p>
               </div>
             ) : (
               <div className="text-center py-8">
                 <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Start searching</h3>
-                <p className="text-gray-600">Enter a search term to find participants, events, or results</p>
+                <h3 className="text-lg font-medium text-gray-100 mb-2">
+                  Start searching
+                </h3>
+                <p className="text-gray-600">
+                  Enter a search term to find participants, events, or results
+                </p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Quick Search Suggestions */}
-        <Card className="bg-white shadow-lg">
+        <Card className="shadow-lg liquid-glass-enhanced">
           <CardHeader>
-            <CardTitle>Quick Search Suggestions</CardTitle>
+            <CardTitle className="text-white">
+              Quick Search Suggestions
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button variant="outline" onClick={() => setSearchTerm("100m")} className="justify-start bg-transparent">
+              <Button
+                variant="outline"
+                onClick={() => setSearchTerm("100m")}
+                className="justify-start bg-transparent text-white"
+              >
                 <Trophy className="h-4 w-4 mr-2" />
                 100m Events
               </Button>
-              <Button variant="outline" onClick={() => setSearchTerm("relay")} className="justify-start bg-transparent">
+              <Button
+                variant="outline"
+                onClick={() => setSearchTerm("relay")}
+                className="justify-start bg-transparent text-white"
+              >
                 <Calendar className="h-4 w-4 mr-2" />
                 Relay Races
               </Button>
-              <Button variant="outline" onClick={() => setSearchTerm("track")} className="justify-start bg-transparent">
+              <Button
+                variant="outline"
+                onClick={() => setSearchTerm("track")}
+                className="justify-start bg-transparent text-white"
+              >
                 <Trophy className="h-4 w-4 mr-2" />
                 Track Events
               </Button>
-              <Button variant="outline" onClick={() => setSearchTerm("field")} className="justify-start bg-transparent">
+              <Button
+                variant="outline"
+                onClick={() => setSearchTerm("field")}
+                className="justify-start bg-transparent text-white"
+              >
                 <Trophy className="h-4 w-4 mr-2" />
                 Field Events
               </Button>
@@ -301,5 +374,5 @@ export default function SearchPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

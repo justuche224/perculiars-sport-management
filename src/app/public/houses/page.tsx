@@ -19,19 +19,19 @@ export default async function PublicHousesPage() {
     .order("total_points", { ascending: false })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="outline" asChild>
+          <Button asChild>
             <Link href="/public/results">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Results
             </Link>
           </Button>
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">House Teams</h1>
-            <p className="text-gray-600 mt-2">Meet the competing house teams</p>
+            <h1 className="text-4xl font-bold">House Teams</h1>
+            <p className="mt-2">Meet the competing house teams</p>
           </div>
         </div>
 
@@ -40,7 +40,7 @@ export default async function PublicHousesPage() {
             {houses.map((house, index) => (
               <Card
                 key={house.id}
-                className={`hover:shadow-xl transition-all duration-300 bg-white ${
+                className={`hover:shadow-xl transition-all duration-300 liquid-glass-enhanced ${
                   index === 0 ? "ring-2 ring-yellow-400 shadow-lg" : ""
                 }`}
               >
@@ -61,8 +61,8 @@ export default async function PublicHousesPage() {
                       <div className="text-white font-bold text-2xl">{house.name.charAt(0)}</div>
                     </div>
                     <div>
-                      <CardTitle className="text-2xl text-gray-900">{house.name}</CardTitle>
-                      <CardDescription className="text-lg">
+                      <CardTitle className="text-2xl text-white">{house.name}</CardTitle>
+                      <CardDescription className="text-lg text-white/50">
                         {house.captain?.full_name ? `Captain: ${house.captain.full_name}` : "Captain: TBA"}
                       </CardDescription>
                     </div>
@@ -73,7 +73,7 @@ export default async function PublicHousesPage() {
                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-2">
                         <Trophy className="h-5 w-5 text-yellow-500" />
-                        <span className="font-medium">Total Points</span>
+                        <span className="font-medium text-black">Total Points</span>
                       </div>
                       <div className="text-2xl font-bold text-gray-900">{house.total_points}</div>
                     </div>
@@ -81,7 +81,7 @@ export default async function PublicHousesPage() {
                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-2">
                         <Users className="h-5 w-5 text-blue-500" />
-                        <span className="font-medium">Participants</span>
+                        <span className="font-medium text-black">Participants</span>
                       </div>
                       <div className="text-2xl font-bold text-gray-900">{house.participants?.[0]?.count || 0}</div>
                     </div>
@@ -89,7 +89,7 @@ export default async function PublicHousesPage() {
                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded-full" style={{ backgroundColor: house.color }} />
-                        <span className="font-medium">House Color</span>
+                        <span className="font-medium text-black">House Color</span>
                       </div>
                       <div className="text-lg font-medium capitalize" style={{ color: house.color }}>
                         {house.color}
@@ -97,7 +97,7 @@ export default async function PublicHousesPage() {
                     </div>
 
                     <div className="pt-4">
-                      <div className="text-center text-sm text-gray-600">Current Position: #{index + 1}</div>
+                      <div className="text-center text-sm text-gray-200">Current Position: #{index + 1}</div>
                       {index === 0 && (
                         <div className="text-center mt-2">
                           <Badge className="bg-yellow-500 text-white">🏆 Current Leader</Badge>
