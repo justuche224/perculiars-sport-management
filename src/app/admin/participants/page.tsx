@@ -39,10 +39,8 @@ export default async function ParticipantsPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Participant Management
-          </h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold">Participant Management</h1>
+          <p className="text-muted-foreground mt-2">
             Manage participant registrations and house assignments
           </p>
         </div>
@@ -56,7 +54,7 @@ export default async function ParticipantsPage() {
 
       {participantsByHouse && Object.keys(participantsByHouse).length > 0 ? (
         Object.entries(participantsByHouse).map(
-          ([houseName, houseParticipants]) => (
+          ([houseName, houseParticipants]: any) => (
             <div key={houseName} className="space-y-4">
               <div className="flex items-center gap-2">
                 {houseParticipants[0]?.house && (
@@ -67,15 +65,13 @@ export default async function ParticipantsPage() {
                     }}
                   />
                 )}
-                <h2 className="text-xl font-semibold text-gray-800">
-                  {houseName}
-                </h2>
+                <h2 className="text-xl font-semibold">{houseName}</h2>
                 <Badge variant="secondary">
                   {houseParticipants.length} participants
                 </Badge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {houseParticipants.map((participant) => (
+                {houseParticipants.map((participant: any) => (
                   <Card
                     key={participant.id}
                     className="hover:shadow-md transition-shadow"
@@ -99,7 +95,7 @@ export default async function ParticipantsPage() {
                     <CardContent>
                       <div className="space-y-2">
                         {participant.guardian_email && (
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             Guardian: {participant.guardian_email}
                           </p>
                         )}
@@ -131,10 +127,8 @@ export default async function ParticipantsPage() {
         <Card>
           <CardContent className="text-center py-12">
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No participants found
-            </h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-lg font-medium mb-2">No participants found</h3>
+            <p className="text-muted-foreground mb-4">
               Get started by registering your first participant.
             </p>
             <Button asChild>

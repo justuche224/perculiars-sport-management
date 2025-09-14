@@ -20,7 +20,7 @@ export function SiteHeader() {
   const links = [
     { href: "/admin/events", label: "Events", icon: Briefcase },
     { href: "/admin/houses", label: "Houses", icon: HelpCircle },
-    { href: "/admin/participants", label: "Participant", icon: FileText },
+    { href: "/admin/participants", label: "Participants", icon: FileText },
     { href: "/admin/results", label: "Results", icon: Briefcase },
     { href: "/admin/sports", label: "Sports", icon: HelpCircle },
     { href: "/admin/scoreboard", label: "Scoreboard", icon: Info },

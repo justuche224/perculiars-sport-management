@@ -1,29 +1,40 @@
-import { createClient } from "@/lib/server"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Trophy, Calendar } from "lucide-react"
+import { createClient } from "@/lib/server";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Users, Trophy, Calendar } from "lucide-react";
 
 export default async function AdminDashboard() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // Get dashboard statistics
-  const [housesResult, sportsResult, participantsResult, eventsResult] = await Promise.all([
-    supabase.from("houses").select("id").eq("id", "id"),
-    supabase.from("sports").select("id").eq("is_active", true),
-    supabase.from("participants").select("id").eq("is_active", true),
-    supabase.from("events").select("id, status"),
-  ])
+  const [housesResult, sportsResult, participantsResult, eventsResult] =
+    await Promise.all([
+      supabase.from("houses").select("id").eq("id", "id"),
+      supabase.from("sports").select("id").eq("is_active", true),
+      supabase.from("participants").select("id").eq("is_active", true),
+      supabase.from("events").select("id, status"),
+    ]);
 
-  const totalHouses = housesResult.data?.length || 0
-  const totalSports = sportsResult.data?.length || 0
-  const totalParticipants = participantsResult.data?.length || 0
-  const totalEvents = eventsResult.data?.length || 0
-  const upcomingEvents = eventsResult.data?.filter((event) => event.status === "scheduled").length || 0
+  const totalHouses = housesResult.data?.length || 0;
+  const totalSports = sportsResult.data?.length || 0;
+  const totalParticipants = participantsResult.data?.length || 0;
+  const totalEvents = eventsResult.data?.length || 0;
+  const upcomingEvents =
+    eventsResult.data?.filter((event) => event.status === "scheduled").length ||
+    0;
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">Manage your sports day events and participants</p>
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <p className="text-muted-foreground mt-2">
+          Manage your sports day events and participants
+        </p>
       </div>
 
       {/* Statistics Cards */}
@@ -57,18 +68,24 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalParticipants}</div>
-            <p className="text-xs text-muted-foreground">Registered participants</p>
+            <p className="text-xs text-muted-foreground">
+              Registered participants
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Upcoming Events
+            </CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{upcomingEvents}</div>
-            <p className="text-xs text-muted-foreground">of {totalEvents} total events</p>
+            <p className="text-xs text-muted-foreground">
+              of {totalEvents} total events
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -78,7 +95,9 @@ export default async function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>House Management</CardTitle>
-            <CardDescription>Manage house teams and assign captains</CardDescription>
+            <CardDescription>
+              Manage house teams and assign captains
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <a
@@ -93,7 +112,9 @@ export default async function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Sports & Events</CardTitle>
-            <CardDescription>Configure sports categories and schedule events</CardDescription>
+            <CardDescription>
+              Configure sports categories and schedule events
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <a
@@ -108,7 +129,9 @@ export default async function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Results & Scoring</CardTitle>
-            <CardDescription>Record results and update leaderboards</CardDescription>
+            <CardDescription>
+              Record results and update leaderboards
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <a
@@ -121,5 +144,5 @@ export default async function AdminDashboard() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

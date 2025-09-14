@@ -1,52 +1,62 @@
-import { createClient } from "@/lib/server"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Trophy, Clock, CheckCircle } from "lucide-react"
-import Link from "next/link"
-import { format } from "date-fns"
+import { createClient } from "@/lib/server";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Trophy, Clock, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { format } from "date-fns";
 
 export default async function ResultsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   // Get events that can have results recorded
   const { data: events } = await supabase
     .from("events")
-    .select(`
+    .select(
+      `
       *,
       sport:sports(name, category, points_first, points_second, points_third),
       results:results(count),
       event_participants:event_participants(count)
-    `)
+    `
+    )
     .in("status", ["in_progress", "completed"])
-    .order("scheduled_time", { ascending: false })
+    .order("scheduled_time", { ascending: false });
 
   const formatDateTime = (dateTime: string | null) => {
-    if (!dateTime) return "Not scheduled"
-    return format(new Date(dateTime), "MMM dd, h:mm a")
-  }
+    if (!dateTime) return "Not scheduled";
+    return format(new Date(dateTime), "MMM dd, h:mm a");
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "in_progress":
-        return "destructive"
+        return "destructive";
       case "completed":
-        return "secondary"
+        return "secondary";
       default:
-        return "default"
+        return "default";
     }
-  }
+  };
 
   const hasResults = (event: any) => {
-    return event.results?.[0]?.count > 0
-  }
+    return event.results?.[0]?.count > 0;
+  };
 
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Results Management</h1>
-          <p className="text-gray-600 mt-2">Record and manage event results</p>
+          <h1 className="text-3xl font-bold">Results Management</h1>
+          <p className="text-muted-foreground mt-2">
+            Record and manage event results
+          </p>
         </div>
         <Button asChild>
           <Link href="/admin/scoreboard">
@@ -66,7 +76,9 @@ export default async function ResultsPage() {
                     <Trophy className="h-5 w-5 text-yellow-500" />
                     {event.name}
                   </CardTitle>
-                  <Badge variant={getStatusColor(event.status)}>{event.status.replace("_", " ")}</Badge>
+                  <Badge variant={getStatusColor(event.status)}>
+                    {event.status.replace("_", " ")}
+                  </Badge>
                 </div>
                 <CardDescription>
                   {event.sport?.name} - {event.sport?.category}
@@ -74,19 +86,27 @@ export default async function ResultsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     {formatDateTime(event.scheduled_time)}
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Participants:</span>
-                    <span className="font-medium">{event.event_participants?.[0]?.count || 0}</span>
+                    <span className="text-muted-foreground">Participants:</span>
+                    <span className="font-medium">
+                      {event.event_participants?.[0]?.count || 0}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Results recorded:</span>
+                    <span className="text-muted-foreground">
+                      Results recorded:
+                    </span>
                     <div className="flex items-center gap-1">
-                      {hasResults(event) && <CheckCircle className="h-4 w-4 text-green-500" />}
-                      <span className="font-medium">{event.results?.[0]?.count || 0}</span>
+                      {hasResults(event) && (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      )}
+                      <span className="font-medium">
+                        {event.results?.[0]?.count || 0}
+                      </span>
                     </div>
                   </div>
                   <div className="flex gap-2 pt-2">
@@ -97,7 +117,9 @@ export default async function ResultsPage() {
                     </Button>
                     {event.status === "in_progress" && (
                       <Button size="sm" asChild>
-                        <Link href={`/admin/results/${event.id}/record`}>Quick Record</Link>
+                        <Link href={`/admin/results/${event.id}/record`}>
+                          Quick Record
+                        </Link>
                       </Button>
                     )}
                   </div>
@@ -110,8 +132,12 @@ export default async function ResultsPage() {
         <Card>
           <CardContent className="text-center py-12">
             <Trophy className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No events ready for results</h3>
-            <p className="text-gray-600 mb-4">Events must be in progress or completed to record results.</p>
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              No events ready for results
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Events must be in progress or completed to record results.
+            </p>
             <Button variant="outline" asChild>
               <Link href="/admin/events">Manage Events</Link>
             </Button>
@@ -119,5 +145,5 @@ export default async function ResultsPage() {
         </Card>
       )}
     </div>
-  )
+  );
 }

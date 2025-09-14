@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { createClient } from "@/lib/client"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { createClient } from "@/lib/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const HOUSE_COLORS = [
   { name: "Red", value: "#ef4444" },
@@ -22,24 +28,24 @@ const HOUSE_COLORS = [
   { name: "Orange", value: "#f97316" },
   { name: "Pink", value: "#ec4899" },
   { name: "Teal", value: "#14b8a6" },
-]
+];
 
 interface Captain {
-  id: string
-  full_name: string
-  email: string
+  id: string;
+  full_name: string;
+  email: string;
 }
 
 export default function EditHousePage({ params }: { params: { id: string } }) {
-  const [name, setName] = useState("")
-  const [color, setColor] = useState("")
-  const [captainId, setCaptainId] = useState<string>("")
-  const [captains, setCaptains] = useState<Captain[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingData, setIsLoadingData] = useState(true)
-  const router = useRouter()
-  const supabase = createClient()
+  const [name, setName] = useState("");
+  const [color, setColor] = useState("");
+  const [captainId, setCaptainId] = useState<string>("");
+  const [captains, setCaptains] = useState<Captain[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
     const loadData = async () => {
@@ -49,38 +55,40 @@ export default function EditHousePage({ params }: { params: { id: string } }) {
           .from("houses")
           .select("*")
           .eq("id", params.id)
-          .single()
+          .single();
 
-        if (houseError) throw houseError
+        if (houseError) throw houseError;
 
-        setName(house.name)
-        setColor(house.color)
-        setCaptainId(house.captain_id || "")
+        setName(house.name);
+        setColor(house.color);
+        setCaptainId(house.captain_id || "");
 
         // Load potential captains (admins and house captains)
         const { data: profiles, error: profilesError } = await supabase
           .from("profiles")
           .select("id, full_name, email")
           .in("role", ["admin", "house_captain"])
-          .order("full_name")
+          .order("full_name");
 
-        if (profilesError) throw profilesError
-        setCaptains(profiles || [])
+        if (profilesError) throw profilesError;
+        setCaptains(profiles || []);
       } catch (error) {
-        console.error("Error loading data:", error)
-        setError(error instanceof Error ? error.message : "Failed to load data")
+        console.error("Error loading data:", error);
+        setError(
+          error instanceof Error ? error.message : "Failed to load data"
+        );
       } finally {
-        setIsLoadingData(false)
+        setIsLoadingData(false);
       }
-    }
+    };
 
-    loadData()
-  }, [params.id, supabase])
+    loadData();
+  }, [params.id, supabase]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
     try {
       const { error } = await supabase
@@ -91,16 +99,16 @@ export default function EditHousePage({ params }: { params: { id: string } }) {
           captain_id: captainId || null,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", params.id)
+        .eq("id", params.id);
 
-      if (error) throw error
-      router.push(`/admin/houses/${params.id}`)
+      if (error) throw error;
+      router.push(`/admin/houses/${params.id}`);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (isLoadingData) {
     return (
@@ -108,11 +116,13 @@ export default function EditHousePage({ params }: { params: { id: string } }) {
         <Card>
           <CardContent className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading house details...</p>
+            <p className="mt-4 text-muted-foreground">
+              Loading house details...
+            </p>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -126,8 +136,10 @@ export default function EditHousePage({ params }: { params: { id: string } }) {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit House</h1>
-          <p className="text-gray-600">Update house information and settings</p>
+          <h1 className="text-2xl font-bold">Edit House</h1>
+          <p className="text-muted-foreground">
+            Update house information and settings
+          </p>
         </div>
       </div>
 
@@ -165,8 +177,13 @@ export default function EditHousePage({ params }: { params: { id: string } }) {
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: houseColor.value }} />
-                    <span className="text-sm font-medium">{houseColor.name}</span>
+                    <div
+                      className="w-6 h-6 rounded-full"
+                      style={{ backgroundColor: houseColor.value }}
+                    />
+                    <span className="text-sm font-medium">
+                      {houseColor.name}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -200,7 +217,11 @@ export default function EditHousePage({ params }: { params: { id: string } }) {
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? "Saving..." : "Save Changes"}
               </Button>
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
                 Cancel
               </Button>
             </div>
@@ -208,5 +229,5 @@ export default function EditHousePage({ params }: { params: { id: string } }) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
