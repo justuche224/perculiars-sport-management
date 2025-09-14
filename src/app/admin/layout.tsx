@@ -1,7 +1,7 @@
 import type React from "react"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/server"
-import { AdminNav } from "@/components/admin-nav"
+import { SiteHeader } from "@/components/admin-nav"
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -59,8 +59,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   console.log("[v0] Access granted. User role:", profile.role)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AdminNav />
+    <div className="min-h-screen">
+      <SiteHeader />
       <main className="container mx-auto px-4 py-8">{children}</main>
     </div>
   )

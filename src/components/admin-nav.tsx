@@ -1,72 +1,142 @@
-"use client"
+"use client";
 
-import { createClient } from "@/lib/client"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Home, Users, Trophy, Calendar, BarChart3, LogOut } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import Image from "next/image";
+import {
+  Menu,
+  Briefcase,
+  HelpCircle,
+  FileText,
+  Info,
+  LogOut,
+} from "lucide-react";
+import { createClient } from "@/lib/client";
+import { useRouter } from "next/navigation";
 
-export function AdminNav() {
-  const router = useRouter()
+export function SiteHeader() {
+  const links = [
+    { href: "/admin/events", label: "Events", icon: Briefcase },
+    { href: "/admin/houses", label: "Houses", icon: HelpCircle },
+    { href: "/admin/participants", label: "Participant", icon: FileText },
+    { href: "/admin/results", label: "Results", icon: Briefcase },
+    { href: "/admin/sports", label: "Sports", icon: HelpCircle },
+    { href: "/admin/scoreboard", label: "Scoreboard", icon: Info },
+  ];
+
+  const router = useRouter();
 
   const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push("/")
-  }
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   return (
-    <nav className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-8">
-            <Link href="/admin" className="text-xl font-bold text-gray-900">
-              Sports Admin
-            </Link>
-            <div className="hidden md:flex space-x-4">
+    <header className="sticky top-0 z-50 p-4">
+      <div className="container mx-auto max-w-4xl">
+        <div className="flex h-14 items-center justify-between px-6 liquid-glass-header rounded-full">
+          {/* Brand Logo */}
+          <Link href="/admin" className="flex items-center gap-1.5">
+            <Image
+              src="/icons/skitbit-white.svg"
+              alt="Skitbit logo"
+              width={20}
+              height={20}
+              className="h-5 w-5"
+            />
+            <span className="font-semibold tracking-wide">Skitbit</span>
+          </Link>
+
+          {/* Desktop Nav */}
+          <nav className="hidden items-center gap-6 text-sm md:flex">
+            {links.map((l) => (
               <Link
-                href="/admin"
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                key={l.href}
+                href={l.href}
+                className="hover:text-purple-300 transition-colors"
               >
-                <Home className="h-4 w-4" />
-                <span>Dashboard</span>
+                {l.label}
               </Link>
-              <Link
-                href="/admin/houses"
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-              >
-                <Users className="h-4 w-4" />
-                <span>Houses</span>
-              </Link>
-              <Link
-                href="/admin/sports"
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-              >
-                <Trophy className="h-4 w-4" />
-                <span>Sports</span>
-              </Link>
-              <Link
-                href="/admin/events"
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-              >
-                <Calendar className="h-4 w-4" />
-                <span>Events</span>
-              </Link>
-              <Link
-                href="/admin/results"
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-              >
-                <BarChart3 className="h-4 w-4" />
-                <span>Results</span>
-              </Link>
-            </div>
+            ))}
+          </nav>
+
+          {/* Desktop CTA */}
+          <div className="hidden md:flex">
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="flex items-center space-x-2 bg-transparent"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
+            </Button>
           </div>
-          <Button variant="outline" onClick={handleLogout} className="flex items-center space-x-2 bg-transparent">
-            <LogOut className="h-4 w-4" />
-            <span>Logout</span>
-          </Button>
+
+          {/* Mobile Nav */}
+          <div className="md:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-gray-700 bg-gray-900/80 text-gray-200 hover:bg-gray-800"
+                >
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="liquid-glass border-gray-800 p-0 w-64 flex flex-col"
+              >
+                {/* Brand Header */}
+                <div className="flex items-center gap-1.5 px-4 py-4 border-b border-gray-800">
+                  <Image
+                    src="/icons/skitbit-white.svg"
+                    alt="Skitbit logo"
+                    width={24}
+                    height={24}
+                    className="h-6 w-6"
+                  />
+                  <span className="font-semibold tracking-wide text-white text-lg">
+                    Skitbit
+                  </span>
+                </div>
+
+                {/* Nav Links */}
+                <nav className="flex flex-col gap-1 mt-2 text-gray-200">
+                  {links.map((l) => (
+                    <Link
+                      key={l.href}
+                      href={l.href}
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 hover:text-purple-300 transition-colors"
+                    >
+                      <span className="inline-flex items-center justify-center w-5 h-5 text-gray-400">
+                        <l.icon className="h-4 w-4" />
+                      </span>
+                      <span className="text-sm">{l.label}</span>
+                    </Link>
+                  ))}
+                </nav>
+
+                {/* CTA Button at Bottom */}
+                <div className="mt-auto border-t border-gray-800 p-4">
+                  <Button
+                    variant="outline"
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 bg-transparent"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
-    </nav>
-  )
+    </header>
+  );
 }
