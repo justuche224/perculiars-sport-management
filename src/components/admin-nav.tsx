@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/client";
 import { useRouter } from "next/navigation";
+import { ModeToggle } from "./mode-toggle";
 
 export function SiteHeader() {
   const links = [
@@ -63,7 +64,7 @@ export function SiteHeader() {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex">
+          <div className="hidden md:flex gap-2">
             <Button
               variant="outline"
               onClick={handleLogout}
@@ -72,6 +73,7 @@ export function SiteHeader() {
               <LogOut className="h-4 w-4" />
               <span>Logout</span>
             </Button>
+            <ModeToggle />
           </div>
 
           {/* Mobile Nav */}
