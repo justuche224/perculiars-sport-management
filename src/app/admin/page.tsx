@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Users, Trophy, Calendar } from "lucide-react";
+import Link from "next/link";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -100,12 +101,12 @@ export default async function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <a
+            <Link
               href="/admin/houses"
               className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
             >
               Manage Houses
-            </a>
+            </Link>
           </CardContent>
         </Card>
 
@@ -117,12 +118,12 @@ export default async function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <a
+            <Link
               href="/admin/sports"
               className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
             >
               Manage Sports
-            </a>
+            </Link>
           </CardContent>
         </Card>
 
@@ -134,12 +135,12 @@ export default async function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <a
+            <Link
               href="/admin/results"
               className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
             >
               Manage Results
-            </a>
+            </Link>
           </CardContent>
         </Card>
       </div>
