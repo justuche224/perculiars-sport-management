@@ -46,7 +46,9 @@ export default function RegisterPage() {
         options: {
           emailRedirectTo:
             process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
-            `${window.location.origin}/admin`,
+            `${window.location.origin}${
+              role === "parent" ? "/guardian" : "/admin"
+            }`,
           data: {
             full_name: fullName,
             role: role,

@@ -14,13 +14,14 @@ import Link from "next/link";
 export default async function ParticipantsPage() {
   const supabase = await createClient();
 
-  // Get participants with house information
+  // Get participants with house and guardian information
   const { data: participants } = await supabase
     .from("participants")
     .select(
       `
       *,
-      house:houses(name, color)
+      house:houses(name, color),
+      guardian:profiles(id, full_name, email)
     `
     )
     .order("full_name");
@@ -94,11 +95,18 @@ export default async function ParticipantsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        {participant.guardian_email && (
+                        {participant.guardian && (
                           <p className="text-sm text-muted-foreground">
-                            Guardian: {participant.guardian_email}
+                            Guardian: {participant.guardian.full_name} (
+                            {participant.guardian.email})
                           </p>
                         )}
+                        {!participant.guardian &&
+                          participant.guardian_email && (
+                            <p className="text-sm text-muted-foreground">
+                              Guardian: {participant.guardian_email}
+                            </p>
+                          )}
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm" asChild>
                             <Link
